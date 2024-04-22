@@ -1,44 +1,22 @@
+//The program is a simple banking system written in Java.
+//Account Creation:
+//It allows the user to create multiple bank accounts by specifying an initial balance for each account.
+//Transactions:
+//Users can perform transactions (deposits or withdrawals) on their accounts.
+//They choose the account number, transaction type (deposit or withdrawal), and the amount.
+//If the withdrawal amount exceeds the account balance, it displays an “Insufficient funds” message.
+//Display Balances:
+//After each transaction, it shows the updated balance for the account involved.
+//Finally, it displays the balances of all created accounts.
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
-class Bank {
-    private List<Account> accounts;
-
-    public Bank() {
-        accounts = new ArrayList<>();
-    }
-
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
-
-    public void removeAccount(Account account) {
-        accounts.remove(account);
-    }
-
-    public void depositMoney(Account account, double amount) {
-        account.deposit(amount);
-    }
-
-    public void withdrawMoney(Account account, double amount) {
-        account.withdraw(amount);
-    }
-
-    public void displayAccounts() {
-        System.out.println("Accounts in the bank:");
-        for (Account account : accounts) {
-            System.out.println(account);
-        }
-    }
-}
-
-class Account {
-    private String accountNumber;
+class BankAccount {
     private double balance;
 
-    public Account(String accountNumber) {
-        this.accountNumber = accountNumber;
-        this.balance = 0.0;
+    public BankAccount(double initialBalance) {
+        balance = initialBalance;
     }
 
     public void deposit(double amount) {
@@ -49,31 +27,62 @@ class Account {
         if (balance >= amount) {
             balance -= amount;
         } else {
-            System.out.println("Insufficient funds!");
+            System.out.println("Insufficient funds. Withdrawal cancelled.");
         }
     }
 
-    @Override
-    public String toString() {
-        return "Account Number: " + accountNumber + ", Balance: $" + balance;
+    public double getBalance() {
+        return balance;
     }
 }
 
 public class Miniproject_bank {
     public static void main(String[] args) {
-        Bank myBank = new Bank();
+        Scanner input = new Scanner(System.in);
+        ArrayList<BankAccount> accounts = new ArrayList<>();
 
-        // Create and add some accounts
-        Account account1 = new Account("12345");
-        Account account2 = new Account("67890");
-        myBank.addAccount(account1);
-        myBank.addAccount(account2);
+        System.out.print("Enter the number of accounts you want to create: ");
+        int numAccounts = input.nextInt();
 
-        // Deposit and withdraw money
-        myBank.depositMoney(account1, 1000.0);
-        myBank.withdrawMoney(account2, 200.0);
+        for (int i = 0; i < numAccounts; i++) {
+            System.out.print("Enter initial balance for account " + (i + 1) + ": $");
+            double initialBalance = input.nextDouble();
+            accounts.add(new BankAccount(initialBalance));
+        }
 
-        // Display all accounts
-        myBank.displayAccounts();
+        boolean continueTransaction = true;
+        while (continueTransaction) {
+            System.out.print("Do you want to perform a transaction? (1 for YES, 0 for NO): ");
+            int choice = input.nextInt();
+
+            if (choice == 1) {
+                System.out.print("Enter the account number (1-" + numAccounts + "): ");
+                int accountNumber = input.nextInt();
+
+                System.out.print("Enter 1 for deposit or 0 for withdrawal: ");
+                int transactionType = input.nextInt();
+
+                System.out.print("Enter the amount: $");
+                double amount = input.nextDouble();
+
+                BankAccount account = accounts.get(accountNumber - 1);
+                if (transactionType == 1) {
+                    account.deposit(amount);
+                    System.out.println("Updated balance: $" + account.getBalance());
+                } else if (transactionType == 0) {
+                    account.withdraw(amount);
+                    System.out.println("Updated balance: $" + account.getBalance());
+                } else {
+                    System.out.println("Invalid transaction type. Please enter 1 for deposit or 0 for withdrawal.");
+                }
+            } else {
+                continueTransaction = false;
+            }
+        }
+
+        System.out.println("\nAccount balances:");
+        for (int i = 0; i < numAccounts; i++) {
+            System.out.println("Account " + (i + 1) + ": $" + accounts.get(i).getBalance());
+        }
     }
 }
